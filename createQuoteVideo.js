@@ -13,6 +13,10 @@ const screenshotsDir = path.join(outputDir, 'screenshots');
 fs.ensureDirSync(outputDir);
 fs.ensureDirSync(screenshotsDir);
 
+// Read and convert background image to base64
+const backgroundImagePath = path.join(__dirname, 'images', 'pexels-photo-24243721.png');
+const backgroundImageBase64 = fs.readFileSync(backgroundImagePath, { encoding: 'base64' });
+
 // HTML template for quotes
 function generateQuoteHTML(quote, author) {
     return `
@@ -24,18 +28,38 @@ function generateQuoteHTML(quote, author) {
             body {
                 margin: 0;
                 padding: 0;
-                display: flex;
-                justify-content: center;
-                align-items: center;
                 min-height: 100vh;
-                background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
                 font-family: 'Arial', sans-serif;
+                position: relative;
+            }
+            .background-image {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url('data:image/png;base64,${backgroundImageBase64}');
+                background-size: cover;
+                background-position: center;
+                z-index: 1;
+            }
+            .black-rectangle {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 80%;
+                max-width: 1000px;
+                background-color: rgba(0, 0, 0, 0.85);
+                padding: 3rem;
+                border-radius: 10px;
+                z-index: 2;
             }
             .quote-container {
                 text-align: center;
-                padding: 2rem;
-                max-width: 800px;
                 color: white;
+                position: relative;
+                z-index: 3;
             }
             .quote {
                 font-size: 2.5rem;
@@ -51,9 +75,12 @@ function generateQuoteHTML(quote, author) {
         </style>
     </head>
     <body>
-        <div class="quote-container">
-            <div class="quote">${quote}</div>
-            <div class="author">- ${author}</div>
+        <div class="background-image"></div>
+        <div class="black-rectangle">
+            <div class="quote-container">
+                <div class="quote">${quote}</div>
+                <div class="author">- ${author}</div>
+            </div>
         </div>
     </body>
     </html>
